@@ -10,12 +10,14 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.myapp.broadcast.AirPlaneBroadcastReciver
 import com.example.myapp.broadcast.TestReciever
 import com.example.myapp.databinding.ActivityMainBinding
+import com.example.myapp.foregroundservices.RuningService
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -29,6 +31,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
+        }
         registerReceiver(
             airPlaneBroadcastReciver,
             IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
@@ -41,20 +49,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.click.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("john.c.calhoun@examplepetstore.com"))
-                putExtra(Intent.EXTRA_SUBJECT, "This is my First Email")
-                putExtra(Intent.EXTRA_TEXT, "This is my First Email. to john")
-                startActivity(this)
-            }
-            if(intent.resolveActivity(packageManager) != null) {
-                startActivity(intent)
+            Intent(applicationContext, RuningService::class.java).also {
+                it.action = RuningService.Action.START.toString()
+                startService(it)
             }
         }
-        viewModel.uri.observe(this) {
-            Glide.with(this).load(it).into(binding.image)
+        binding.clickStop.setOnClickListener {
+            Intent(applicationContext, RuningService::class.java).also {
+                it.action = RuningService.Action.STOP.toString()
+                startService(it)
+            }
         }
+//        binding.click.setOnClickListener {
+//            val intent = Intent(Intent.ACTION_SEND).apply {
+//                type = "text/plain"
+//                putExtra(Intent.EXTRA_EMAIL, arrayOf("john.c.calhoun@examplepetstore.com"))
+//                putExtra(Intent.EXTRA_SUBJECT, "This is my First Email")
+//                putExtra(Intent.EXTRA_TEXT, "This is my First Email. to john")
+//                startActivity(this)
+//            }
+//            if(intent.resolveActivity(packageManager) != null) {
+//                startActivity(intent)
+//            }
+//        }
+//        viewModel.uri.observe(this) {
+//            Glide.with(this).load(it).into(binding.image)
+//        }
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.myapp.foregroundservices
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -20,12 +21,12 @@ class RuningService: Service() {
         return super.onStartCommand(intent, flags, startId)
     }
     private fun start(){
-         val notification = NotificationCompat.Builder(this,"running_channel")
+        val notification = NotificationCompat.Builder(this,"running_channel")
              .setSmallIcon(R.drawable.ic_launcher_foreground)
              .setContentTitle("Run is active")
              .setContentText("Elapsed time: 00:50")
              .build()
-        startForeground(1,notification)
+        startForeground(1, notification)
     }
 
     enum class Action{

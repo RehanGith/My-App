@@ -29,7 +29,9 @@
                 <data android:mimeType="image/*"/>
             </intent-filter>
         </activity>
-        <service android:name=".foregroundservices.RuningService"/>
+        <service android:name=".foregroundservices.RuningService"
+            android:enabled="true"
+            android:foregroundServiceType="shortService"/>
     </application>
     <queries>
         <intent>
