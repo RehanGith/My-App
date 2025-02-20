@@ -1,6 +1,7 @@
 package com.example.myapp
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -12,11 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.example.myapp.broadcast.AirPlaneBroadcastReciver
 import com.example.myapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val viewModel: ImageViewModel by viewModels()
+    private val airPlaneBroadcastReciver=  AirPlaneBroadcastReciver()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("uri", "uri")
@@ -24,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        registerReceiver(
+            airPlaneBroadcastReciver,
+            IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        )
         binding.click.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
@@ -73,6 +80,11 @@ class MainActivity : AppCompatActivity() {
                 Log.d("Unhandled", "Unhandled intent type: ${intent.type}")
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(airPlaneBroadcastReciver)
     }
 
 }
