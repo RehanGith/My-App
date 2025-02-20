@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: ImageViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("uri", "uri")
+        handleIntent(intent)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -39,12 +42,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
-        } else {
-            intent.getParcelableExtra(Intent.EXTRA_STREAM)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        Log.d("Intent", intent.toString())
+        when (intent.type) {
+            "image/*" -> {
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                }
+                uri?.let {
+                    viewModel.setUri(it)
+                    Log.d("Image URI", it.toString())
+                }
+            }
+            "text/plain" -> {
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+                text?.let {
+                    Log.d("Shared Text", it)
+                }
+            }
+            else -> {
+                Log.d("Unhandled", "Unhandled intent type: ${intent.type}")
+            }
         }
     }
 
