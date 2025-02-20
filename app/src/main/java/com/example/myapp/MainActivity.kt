@@ -6,13 +6,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.example.myapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+    private val viewModel: ImageViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -29,6 +32,9 @@ class MainActivity : AppCompatActivity() {
             if(intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
             }
+        }
+        viewModel.uri.observe(this) {
+            Glide.with(this).load(it).into(binding.image)
         }
 
     }
