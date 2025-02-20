@@ -1,6 +1,7 @@
 package com.example.myapp
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,9 @@ class MainActivity : AppCompatActivity() {
                 putExtra(Intent.EXTRA_SUBJECT, "This is my First Email")
                 putExtra(Intent.EXTRA_TEXT, "This is my First Email. to john")
                 startActivity(this)
+            }
+            if(intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
             }
         }
 
