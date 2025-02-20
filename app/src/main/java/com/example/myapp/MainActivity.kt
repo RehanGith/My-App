@@ -14,12 +14,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.myapp.broadcast.AirPlaneBroadcastReciver
+import com.example.myapp.broadcast.TestReciever
 import com.example.myapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val viewModel: ImageViewModel by viewModels()
     private val airPlaneBroadcastReciver=  AirPlaneBroadcastReciver()
+    private val testReciver = TestReciever()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("uri", "uri")
@@ -31,6 +33,13 @@ class MainActivity : AppCompatActivity() {
             airPlaneBroadcastReciver,
             IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(
+                testReciver,
+                IntentFilter("ACTION_TEXT"), RECEIVER_NOT_EXPORTED
+            )
+        }
+
         binding.click.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
@@ -85,6 +94,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(airPlaneBroadcastReciver)
+        unregisterReceiver(testReciver)
     }
 
 }
